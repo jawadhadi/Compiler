@@ -19,7 +19,6 @@ const int KEY_COUNT = 13;
 string buffer;
 int currentIndex = 0;
 
-
 const char *keywords[KEY_COUNT] = { "integer", "function", "begin", "end", "return", "returns", "while", "if", "for", "void", "character", "print", "input" };
 
 bool isKeyword(string p) {
@@ -62,27 +61,6 @@ bool isDigit(char c) {
     
 }
 
-int incSize(char** a, int size) {
-    
-    int oldSize = size;
-    size++;
-    
-    char *temp = *a;
-    
-    *a = (char*)malloc(size);
-    
-    for (int i = 0; i<oldSize; i++) {
-        
-        (*a)[i] = temp[i];
-        //*(*a+i) = temp[i];
-    }
-    
-    free(temp);
-    
-    return size;
-    
-}
-
 bool isIdentifier(string &token, string &lexeme) {
     
     int state = 1;
@@ -92,7 +70,7 @@ bool isIdentifier(string &token, string &lexeme) {
     
     const int CHAR_LIMIT = 15;
     
-    while (buffer[currentIndex] != '\0') {
+    while (1) {
         
         c = buffer[currentIndex];
         
@@ -196,6 +174,7 @@ bool isNumber(string &token, string &lexeme) {
                 }
                 else {
                     currentIndex = startPosition;
+                    return false;
                 }
                 break;
                 
@@ -306,7 +285,7 @@ bool isNumber(string &token, string &lexeme) {
                 if (currentIndex > startPosition) {
                     
                     token = "NUM";
-                    lexeme = buffer.substr(startPosition, startPosition - currentIndex);
+                    lexeme = buffer.substr(startPosition, currentIndex - startPosition);
                     return true;
                     
                 }
@@ -342,7 +321,7 @@ int isRO(string &token, string &lexeme) {
                     currentIndex++;
                 }
                 else if (c == '>') {
-                    state = 10;
+                    state = 11;
                     currentIndex++;
                 }
                 else {
@@ -405,10 +384,13 @@ int isRO(string &token, string &lexeme) {
                 if (c == '-') {
                     state = 8;
                     currentIndex++;
+                }else if (c == '='){
+                    state = 9;
+                    currentIndex++;
                 }
                 else {
                     
-                    state = 9;
+                    state = 10;
                     currentIndex++;
                 }
                 break;
@@ -421,11 +403,18 @@ int isRO(string &token, string &lexeme) {
             case 9:
                 
                 token = "RO";
+                lexeme = "<=";
+                return true;
+                
+                
+            case 10:
+                
+                token = "RO";
                 lexeme = "<";
                 currentIndex--;
                 return true;
                 
-            case 10:
+            case 11:
                 
                 token = "RO";
                 lexeme = ">";
@@ -746,9 +735,15 @@ bool getNextToken(string &token, string &lexeme) {
         copyFileToString();
     }
     
-    if(buffer[currentIndex] == ' ' || buffer[currentIndex] == '\n' || buffer[currentIndex] == '\t'){
-        currentIndex++;
+    bool check = false;
+    while (!check) {
+        if(buffer[currentIndex] == ' ' || buffer[currentIndex] == '\n' || buffer[currentIndex] == '\t'){
+            currentIndex++;
+        }else{
+            check = true;
+        }
     }
+    
     
     
     if (isIdentifier(token, lexeme)) {

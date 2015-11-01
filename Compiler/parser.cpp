@@ -13,13 +13,13 @@ int main(int argc, const char * argv[]) {
     string token;
     string lexeme;
     
-    for (int i = 0; i < 3; i++) {
-        if(getNextToken(token, lexeme)){
-            cout<<token<<" "<<lexeme<<endl;
-        }else{
-            cout<<"Token not found."<<endl;
-        }
+    
+    while (getNextToken(token, lexeme)) {
+        cout<<token<<" "<<lexeme<<endl;
     }
+    
+    //cout<<"Token not found."<<endl;
+
 
     
 }
