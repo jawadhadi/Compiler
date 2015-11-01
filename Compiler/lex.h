@@ -70,7 +70,7 @@ bool isIdentifier(string &token, string &lexeme) {
     
     const int CHAR_LIMIT = 15;
     
-    while (1) {
+    do{
         
         c = buffer[currentIndex];
         
@@ -135,7 +135,7 @@ bool isIdentifier(string &token, string &lexeme) {
                 break;
         }
         
-    }
+    }while (buffer[currentIndex] != '\0');
     
     return false;
 }
@@ -147,7 +147,7 @@ bool isNumber(string &token, string &lexeme) {
     
     int c;
     
-    while (1) {
+    do{
         
         c = buffer[currentIndex];
         
@@ -294,7 +294,7 @@ bool isNumber(string &token, string &lexeme) {
                 
         }
         
-    }
+    }while (buffer[currentIndex] != '\0');
     
     return false;
     
@@ -306,7 +306,7 @@ int isRO(string &token, string &lexeme) {
     int startPosition = currentIndex;
     int c;
     
-    while (1) {
+     do{
         
         c = buffer[currentIndex];
         
@@ -422,7 +422,7 @@ int isRO(string &token, string &lexeme) {
                 
         }
         
-    }
+     }while(buffer[currentIndex] != '\0');
     
     return false;
     
@@ -434,7 +434,7 @@ int isComment(string &token, string &lexeme) {
     int startPosition = currentIndex;
     int c;
     
-    while (1) {
+    do{
         
         c = buffer[currentIndex];
         switch (state) {
@@ -525,7 +525,7 @@ int isComment(string &token, string &lexeme) {
                 return true;
   
         }
-    }
+    }while(buffer[currentIndex] != '\0');
     
     return false;
     
