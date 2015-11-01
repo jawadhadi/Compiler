@@ -18,6 +18,7 @@ using namespace std;
 const int KEY_COUNT = 13;
 string buffer;
 int currentIndex = 0;
+bool endOfFile = false;
 
 const char *keywords[KEY_COUNT] = { "integer", "function", "begin", "end", "return", "returns", "while", "if", "for", "void", "character", "print", "input" };
 
@@ -537,34 +538,36 @@ int isArithmetic(string &token, string &lexeme) {
     int c;
     c = buffer[currentIndex];
     
-    if (c == '/') {
-        
-        token = "/";
-        lexeme = "^";
-        currentIndex++;
-        return true;
+    if (c != '\0') {
+        if (c == '/') {
+            
+            token = "/";
+            lexeme = "^";
+            currentIndex++;
+            return true;
+            
+        }
+        else if (c == '+') {
+            
+            token = "+";
+            lexeme = "^";
+            currentIndex++;
+            return true;
+        }
+        else if (c == '-') {
+            
+            token = "-";
+            lexeme = "^";
+            currentIndex++;
+            return true;
+        }
+        else {
+            
+            currentIndex = startPosition;
+            return false;
+        }
 
     }
-    else if (c == '+') {
-
-        token = "+";
-        lexeme = "^";
-        currentIndex++;
-        return true;
-    }
-    else if (c == '-') {
-        
-        token = "-";
-        lexeme = "^";
-        currentIndex++;
-        return true;
-    }
-    else {
-        
-        currentIndex = startPosition;
-        return false;
-    }
-    
     
     return false;
     
@@ -579,54 +582,56 @@ int isBracket(string &token, string &lexeme) {
     
     c = buffer[currentIndex];
     
-    if (c == '[') {
-        
-        token = "[";
-        lexeme = "^";
-        currentIndex++;
-        return true;
-    }
-    else if (c == ']') {
-        
-        token = "]";
-        lexeme = "^";
-        currentIndex++;
-        return true;
-    }
-    else if (c == '(') {
-        
-        token = "(";
-        lexeme = "^";
-        currentIndex++;
-        return true;    }
-    else if (c == ')') {
-        
-        token = ")";
-        lexeme = "^";
-        currentIndex++;
-        return true;
-        
-    }
-    else if (c == ';') {
-        
-        token = ";";
-        lexeme = "^";
-        currentIndex++;
-        return true;
-    }
-    else if (c == ',') {
-        
-        token = ",";
-        lexeme = "^";
-        currentIndex++;
-        return true;
-        
-        
-    }
-    else {
-        
-        currentIndex = startPosition;
-        return false;
+    if (c != '\0') {
+        if (c == '[') {
+            
+            token = "[";
+            lexeme = "^";
+            currentIndex++;
+            return true;
+        }
+        else if (c == ']') {
+            
+            token = "]";
+            lexeme = "^";
+            currentIndex++;
+            return true;
+        }
+        else if (c == '(') {
+            
+            token = "(";
+            lexeme = "^";
+            currentIndex++;
+            return true;    }
+        else if (c == ')') {
+            
+            token = ")";
+            lexeme = "^";
+            currentIndex++;
+            return true;
+            
+        }
+        else if (c == ';') {
+            
+            token = ";";
+            lexeme = "^";
+            currentIndex++;
+            return true;
+        }
+        else if (c == ',') {
+            
+            token = ",";
+            lexeme = "^";
+            currentIndex++;
+            return true;
+            
+            
+        }
+        else {
+            
+            currentIndex = startPosition;
+            return false;
+        }
     }
     
     return false;
@@ -640,7 +645,7 @@ bool isLiteral(string &token, string &lexeme){
     int c;
 
     
-    while (buffer[currentIndex] != '\0') {
+    do{
         
         c = buffer[currentIndex];
         
@@ -702,7 +707,7 @@ bool isLiteral(string &token, string &lexeme){
                 break;
         }
         
-    }
+    }while (buffer[currentIndex] != '\0');
     
     return false;
 
@@ -760,6 +765,12 @@ bool getNextToken(string &token, string &lexeme) {
         return true;
     }else if (isLiteral(token, lexeme)){
         return true;
+    }
+    
+    if(buffer[currentIndex] == '\0'){
+        
+        endOfFile = true;
+        
     }
     
     return false;

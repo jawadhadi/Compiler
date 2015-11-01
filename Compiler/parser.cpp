@@ -18,6 +18,9 @@ int main(int argc, const char * argv[]) {
         cout<<token<<" "<<lexeme<<endl;
     }
     
+    if (!endOfFile) {
+        cout<<"Unrecoginzed token"<<endl;
+    }
     //cout<<"Token not found."<<endl;
 
 
