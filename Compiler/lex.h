@@ -136,7 +136,7 @@ bool isIdentifier(string &token, string &lexeme) {
                 break;
         }
         
-    }while (buffer[currentIndex] != '\0');
+    }while (1);
     
     return false;
 }
@@ -295,7 +295,7 @@ bool isNumber(string &token, string &lexeme) {
                 
         }
         
-    }while (buffer[currentIndex] != '\0');
+    }while (1);
     
     return false;
     
@@ -423,7 +423,7 @@ int isRO(string &token, string &lexeme) {
                 
         }
         
-     }while(buffer[currentIndex] != '\0');
+     }while(1);
     
     return false;
     
@@ -526,7 +526,7 @@ int isComment(string &token, string &lexeme) {
                 return true;
   
         }
-    }while(buffer[currentIndex] != '\0');
+    }while(1);
     
     return false;
     
@@ -707,7 +707,7 @@ bool isLiteral(string &token, string &lexeme){
                 break;
         }
         
-    }while (buffer[currentIndex] != '\0');
+    }while (1);
     
     return false;
 
