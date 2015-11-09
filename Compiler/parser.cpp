@@ -7,15 +7,24 @@
 //
 
 #include "lex.h"
+using namespace std;
+
+
+string taCode[20];
+int lineNumber = 1;
+
+int fCount = 0;
+
+int emitFalse = 0;
+
+int onTrue;
+int onFalse[30];
+//int otherGoto;
 
 string lookahead;
 string lexeme;
 
-int initialPointer = 0;
-int nextPointer = 0;
-
-int space = 0;
-
+int space = 0;  //to print blank spaces for tree
 
 void printSpace(){
     
@@ -39,65 +48,66 @@ void match(string terminal){
     
 }
 
+void declaration();
+void assignment();
 
-
-//////////////////////////    Declaration      ////////////////////////////
-
-
-//void T(){
-//
-//    if (strcmp(lookahead, "integer") == 0) {
-//        match("integer");
-//    }else if (strcmp(lookahead, "character") == 0){
-//
-//        match("character");
-//
-//    }
-//
-//}
-
-void D(){
+void assignmentDeclarationBody(){
     
-    //setLookAhead();
-    //T();
+    if (lookahead.compare("ID") == 0) {
+        
+        assignment();assignmentDeclarationBody();
+    }else if (lookahead.compare("integer") == 0){
+        
+        match("integer");declaration();
+        
+    }else if (lookahead.compare("character") == 0){
+        match("character");declaration();
+    }
+
+    
+}
+
+void declaration(){
     
     space += 2;
     
     printSpace();
     
-    printf("D\n");
+    printf("declaration\n");
     
     match("ID");match(";");
     
     space -= 2;
 }
 
-
 ////////////////////// Assignment /////////////////////////////////
 
-void R(){
+void var(){
     
     if (lookahead.compare("NUM") == 0) {
-        match("NUM");
+        taCode[lineNumber].append(lexeme);match("NUM");
     }else if (lookahead.compare("ID") == 0){
         
-        match("ID");
+        taCode[lineNumber].append(lexeme);match("ID");
         
     }
     
 }
 
 
-void A(){
+void assignment(){
     
-    //setLookAhead();
+    //setLookAheadeclaration();
     
     space += 2;
     printSpace();
-    printf("A\n");
-    match("ID");match("<-");R();match(";");
+    printf("assignment\n");
+    taCode[lineNumber].append(lexeme);match("ID");taCode[lineNumber].append("=");match("<-");var();taCode[lineNumber].append(";");match(";");
+    lineNumber++;
+    
     
     space -=2;
+    assignmentDeclarationBody();
     
 }
 
@@ -105,108 +115,109 @@ void A(){
 
 void Br(){
     
-    space += 2;
-    printSpace();
-    printf("Br\n");
+    //space += 2;
+    //printSpace();
+    //printf("Br\n");
     if (lookahead.compare("[") == 0) {
-        match("[");match("ID");match("]");
+        taCode[lineNumber].append(lookahead);match("[");taCode[lineNumber].append(lexeme);match("ID");taCode[lineNumber].append(lookahead);match("]");
     }
-    space -= 2;
+    //space -= 2;
     
 }
 
 
-void C(){
+void conditionCheck(){
     
-    space += 2;
-    printSpace();
-    printf("C\n");
-    match("ID");Br();match("RO");match("ID");Br();
-    space -= 2;
+    //space += 2;
+    //printSpace();
+    //printf("C\n");
+    taCode[lineNumber].append(lexeme);match("ID");Br();taCode[lineNumber].append(lexeme);match("RO");taCode[lineNumber].append(lexeme);match("ID");Br();taCode[lineNumber].append("goto ");taCode[lineNumber].append(to_string(lineNumber+2));lineNumber++;taCode[lineNumber].append("goto ");onFalse[fCount] = lineNumber;fCount++;
+    lineNumber++;
+    //space -= 2;
 }
 
-void iBody(){
+void ifBody(){
     
     space += 2;
     printSpace();
-    printf("iBody\n");
+    printf("ifBody\n");
     if (lookahead.compare("ID")== 0) {
-        A();iBody();
+        assignment();lineNumber++;ifBody();
     }else if(lookahead.compare("integer") == 0){
         
-        match("integer");D();iBody();
+        match("integer");declaration();ifBody();
     }else if (lookahead.compare("character") == 0){
         
-        match("character");D();iBody();
+        match("character");declaration();ifBody();
         
     }else if (lookahead.compare("COMMENT") == 0){
-        match("COMMENT");iBody();
+        match("COMMENT");ifBody();
     }
     space -= 2;
 }
 
 
-void I(){
-    
-    //setLookAhead();
+void ifcondition(){
     
     space += 2;
     printSpace();
-    printf("I\n");
-    match("if");C();match("begin");iBody();match("end");
+    printf("ifcondition\n");
+    taCode[lineNumber].append(lookahead);match("if");conditionCheck();match("begin");ifBody();taCode[lineNumber].append(lookahead);match("end");
     space -= 2;
+    lineNumber++;
+    taCode[lineNumber].append("goto ");taCode[onFalse[emitFalse]].append(to_string(lineNumber));emitFalse++;
     
 }
-
 
 ///////////////////////////////////    while          ///////////
 
-
-void wBody(){
+void whileBody(){
     
     space += 2;
     printSpace();
-    printf("wBody\n");
+    printf("whileBody\n");
     if (lookahead.compare("if") == 0) {
-        I();wBody();
+        ifcondition();whileBody();
     }else if(lookahead.compare("integer") == 0){
         
-        match("integer");D();wBody();
+        match("integer");declaration();whileBody();
     }else if (lookahead.compare("character") == 0){
         
-        match("character");D();wBody();
+       match("character");declaration();whileBody();
         
     }else if (lookahead.compare("ID") == 0){
         
-        A();wBody();
+        assignment();whileBody();
     }else if (lookahead.compare("COMMENT") == 0){
-        match("COMMENT");wBody();
+        match("COMMENT");whileBody();
     }
     space -= 2;
     
 }
 
-
-void W(){
+void whileLoop(){
     
-    //setLookAhead();
+    //setLookAheadeclaration();
     
     space += 2;
     printSpace();
-    printf("W\n");
-    match("while");C();match("begin");wBody();match("end");
+    printf("whileLoop\n");
+    taCode[lineNumber].append(lookahead);match("while");conditionCheck();match("begin");lineNumber++;whileBody();match("end");
     space -= 2;
+    
+    taCode[onFalse[emitFalse]].append(to_string(lineNumber));emitFalse++;
+    lineNumber++;
+    taCode[lineNumber].append("goto ");taCode[lineNumber].append(to_string(lineNumber));
     
 }
 
-
 /////////////////////////////     Function     //////////////////////////////
 
-void f_T(){
+void funcReturnType(){
     
     space += 2;
     printSpace();
-    printf("f_T\n");
+    printf("funcReturnType\n");
     
     if (lookahead.compare("integer") == 0) {
         
@@ -225,130 +236,124 @@ void f_T(){
     
 }
 
-void P();
+void OP();
 
-void m_P(){
+void multipleParameters(){
     
-    space += 2;
-    printSpace();
-    printf("m_P\n");
+    //space += 2;
+    //printSpace();
+    //printf("m_P\n");
     if (lookahead.compare(",") == 0) {
         
-        match(",");P();
+        match(",");OP();
         
     }
-    space -= 2;
+    //space -= 2;
     
 }
 
-void B(){
+void arrayBracket(){
     
-    space += 2;
-    printSpace();
-    printf("B\n");
+    //space += 2;
+    //printSpace();
+    //printf("B\n");
     if (lookahead.compare("[") == 0) {
         
         match("[");match("]");
         
     }
-    space -= 2;
+    //space -= 2;
     
 }
 
-void P(){
+void OP(){
     
     space += 2;
-    printSpace();
-    
-    if ((lookahead.compare("integer") == 0) || (lookahead.compare("character") == 0)) {
-        printf("P\n");
-        f_T();B();match("ID");m_P();
+    if (lookahead.compare("integer") == 0) {
+        match("integer");arrayBracket();match("ID");multipleParameters();
+         printSpace();
+        printf("OP\n");
+    }else if (lookahead.compare("character") == 0){
+        match("character");arrayBracket();match("ID");multipleParameters();
+         printSpace();
+        printf("OP\n");
     }
     
     space -= 2;
 }
 
-void fBody(){
+void funcBody(){
     
     space += 2;
     printSpace();
-    printf("fBody\n");
+    printf("func_Body\n");
     if (lookahead.compare("if") == 0) {
-        I();fBody();
+        ifcondition();funcBody();
     }else if(lookahead.compare("integer") == 0){
         
-        match("integer");D();fBody();
+        match("integer");declaration();funcBody();
     }else if (lookahead.compare("character") == 0){
         
-        match("character");D();fBody();
+        match("character");declaration();funcBody();
         
     }else if (lookahead.compare("ID") == 0){
         
-        A();fBody();
+        assignment();funcBody();
     }else if (lookahead.compare("while") == 0){
         
-        W();fBody();
+        whileLoop();funcBody();
     }else if(lookahead.compare("return") == 0){
         
         match("return");match("ID");match(";");
         
     }else if (lookahead.compare("COMMENT") == 0){
-        match("COMMENT");fBody();
+        match("COMMENT");funcBody();
     }
+    
+    
+    
     space -= 2;
     
 }
 
 
-void F(){
+void func(){
     
     space += 2;
     printSpace();
-    cout<<"F\n";
-    match("function");match("ID");match("(");P();match(")");match("returns");f_T();match("begin");fBody();match("end");
+    cout<<"func\n";
+    match("function");match("ID");match("(");OP();match(")");match("returns");funcReturnType();match("begin");funcBody();match("end");
     space -=2;
     
 }
-
-
-
-
-
-
 /////////////////////////////////////////////////////////////////////
-
 
 void runCFGs(){
     
     getNextToken(lookahead, lexeme);
     
-     do{
+    do{
         
         if (lookahead.compare("function") == 0) {
-            F();
+            func();
         }else if (lookahead.compare("integer") == 0){
-            match("integer");D();
+            match("integer");declaration();
             
         }else if (lookahead.compare("character") == 0){
-            match("character");D();
+            match("character");declaration();
         }else if (lookahead.compare("ID") == 0){
             
-            match("ID");
-            A();
+            assignment();
             
         }else if (lookahead.compare("if") == 0){
             
-            I();
+            ifcondition();
             
         }else if (lookahead.compare("while") == 0){
-            W();
+            whileLoop();
         }else if (lookahead.compare("COMMENT") == 0){
             match("COMMENT");
         }
-         
-//         if (lookahead.compare("COMMENT") == 0) {
-//             getNextToken(lookahead, lexeme);
-//         }
         
      }while (getNextToken(lookahead, lexeme));
 }
@@ -358,6 +363,10 @@ void runCFGs(){
 int main(int argc, const char * argv[]) {
     
     runCFGs();
+    
+    for (int i = 0; i <= lineNumber; i++) {
+        cout<<taCode[i]<<endl;
+    }
     
     return 0;
 }
