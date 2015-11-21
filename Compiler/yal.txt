@@ -1,18 +1,1 @@
-function max(integer[] a, integer n) returns integer
-begin
-integer m;	*** index of max ***
-integer i;
-
-m <- 1;
-i <- 2;
-
-while i < n
-begin
-if a[i] > a[m]
-begin
-m <- i;
-end
-end
-
-return m;
-end
+m <- 9-9*8+1/3;

@@ -15,12 +15,12 @@
 using namespace std;
 
 
-const int KEY_COUNT = 13;
+const int KEY_COUNT = 14;
 string buffer;
 int currentIndex = 0;
 bool endOfFile = false;
 
-const char *keywords[KEY_COUNT] = { "integer", "function", "begin", "end", "return", "returns", "while", "if", "for", "void", "character", "print", "input" };
+const char *keywords[KEY_COUNT] = { "integer", "function", "begin", "end", "return", "returns", "while", "if", "for", "void", "character", "print", "input", "else" };
 
 bool isKeyword(string p) {
     
@@ -160,7 +160,7 @@ bool isNumber(string &token, string &lexeme) {
                     if (isDigit(buffer[(currentIndex) - 1])) {
                         
                         currentIndex = startPosition;
-                        
+                        return false;
                     }
                     else {
                         
